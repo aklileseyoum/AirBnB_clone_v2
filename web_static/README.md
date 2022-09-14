@@ -1,1 +1,1 @@
-This directory implements webpage design.
+readme for html and css project
