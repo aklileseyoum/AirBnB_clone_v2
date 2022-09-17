@@ -1,38 +1,27 @@
 #!/usr/bin/python3
-"""implementation of class State"""
+"""State class"""
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String
+from sqlalchemy import String, Column
 from sqlalchemy.orm import relationship
-from models.city import City
-from os import getenv
+import os
 import models
-
-
-storage_type = getenv("HBNB_TYPE_STORAGE")
+from models.city import City
 
 
 class State(BaseModel, Base):
-    '''
-        Implementation for the State.
-    '''
+    """state class"""
     __tablename__ = 'states'
-    if storage_type == 'db':
-        name = Column(String(128), nullable=False)
+    name = Column(String(128), nullable=False)
+
+    if os.getenv('HBNB_TYPE_STORAGE') == 'db':
         cities = relationship("City", backref="state",
                               cascade="all, delete-orphan")
     else:
-        name = ""
-
-    if storage_type != 'db':
         @property
         def cities(self):
-            """
-            get list of City instances with state_id
-            equals to the current State.id
-            """
-            list_cities = []
-            all_cities = models.storage.all(City)
-            for key, city_obj in all_cities.items():
-                if city_obj.state_id == self.id:
-                    list_cities.append(city_obj)
-            return 
+            """getter"""
+            list_of_city = []
+            for city in models.storage.all(City).values():
+                if city.state_id == self.id:
+                    list_of_city.append(city)
+            return list_of_city
